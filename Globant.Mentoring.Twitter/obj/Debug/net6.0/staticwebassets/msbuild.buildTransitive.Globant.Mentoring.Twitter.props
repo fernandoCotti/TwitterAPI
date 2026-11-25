@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\buildMultiTargeting\Globant.Mentoring.Twitter.props" />
-</Project>

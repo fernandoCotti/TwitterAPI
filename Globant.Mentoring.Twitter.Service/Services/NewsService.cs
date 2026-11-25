@@ -4,17 +4,27 @@ using NewsAPI.Constants;
 using Globant.Mentoring.Twitter.Models;
 using Globant.Mentoring.Twitter.Repositories;
 using Globant.Mentoring.Twitter.DTOs;
+using Microsoft.Extensions.Configuration;
 
 namespace Globant.Mentoring.Twitter.Services
 {
     public class NewsService : INewsService
     {
+        private readonly string? _apiKey;
 
-        public NewsService(){}
+        // The NewsAPI key comes from configuration ("NewsApi:ApiKey"), e.g. via
+        // `dotnet user-secrets` or the NewsApi__ApiKey environment variable.
+        public NewsService(IConfiguration config)
+        {
+            _apiKey = config["NewsApi:ApiKey"];
+        }
 
         public List<PostDTO> GetNewsAsPostDTOs()
         {
-            var newsApiClient = new NewsApiClient("4175a1c587984e299135fad8af501d14");
+            if (string.IsNullOrEmpty(_apiKey))
+                throw new InvalidOperationException("NewsApi:ApiKey is not configured.");
+
+            var newsApiClient = new NewsApiClient(_apiKey);
             var articlesResponse = newsApiClient.GetEverything(new EverythingRequest
             {
                 Q = "Apple",
